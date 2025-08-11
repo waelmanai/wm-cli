@@ -287,6 +287,386 @@ your-project/
 
 > 🚀 **Pro Tip**: This pattern scales perfectly from simple forms to complex multi-step workflows!
 
+## 📝 **React Hook Form Integration**
+
+**Every generated project comes with React Hook Form + Zod validation for powerful form handling:**
+
+### 🔥 **Complete Form Example with React Hook Form**
+
+**1. Define Your Schema:**
+```typescript
+// schemas/user-schema.ts
+import { z } from 'zod';
+
+export const CreateUserSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email'),
+  age: z.number().min(18, 'Must be at least 18 years old').max(120, 'Age must be realistic'),
+  role: z.enum(['admin', 'user'], {
+    errorMap: () => ({ message: 'Please select a valid role' })
+  }),
+  bio: z.string().min(10, 'Bio must be at least 10 characters').optional(),
+  terms: z.boolean().refine(val => val === true, {
+    message: 'You must accept the terms and conditions'
+  })
+});
+
+export type CreateUserInput = z.infer<typeof CreateUserSchema>;
+```
+
+**2. Create Server Action:**
+```typescript
+// actions/create-user.ts
+'use server';
+
+import { z } from 'zod';
+import { createSafeAction } from '@/lib/create-safe-action';
+import { CreateUserSchema } from '@/schemas/user-schema';
+import { prisma } from '@/lib/db';
+
+export const createUser = createSafeAction(
+  CreateUserSchema,
+  async (data) => {
+    try {
+      // Check if user already exists
+      const existingUser = await prisma.user.findUnique({
+        where: { email: data.email }
+      });
+
+      if (existingUser) {
+        return { error: 'User with this email already exists' };
+      }
+
+      // Create new user
+      const user = await prisma.user.create({
+        data: {
+          name: data.name,
+          email: data.email,
+          age: data.age,
+          role: data.role,
+          bio: data.bio
+        }
+      });
+
+      return { data: { id: user.id, name: user.name, email: user.email } };
+    } catch (error) {
+      return { error: 'Failed to create user. Please try again.' };
+    }
+  }
+);
+```
+
+**3. Advanced Form Component with React Hook Form:**
+```typescript
+// components/forms/CreateUserForm.tsx
+'use client';
+
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from '@/hooks/use-actions';
+import { createUser } from '@/actions/create-user';
+import { CreateUserSchema, CreateUserInput } from '@/schemas/user-schema';
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
+
+export function CreateUserForm() {
+  // React Hook Form setup with Zod validation
+  const form = useForm<CreateUserInput>({
+    resolver: zodResolver(CreateUserSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      age: 18,
+      role: 'user',
+      bio: '',
+      terms: false
+    }
+  });
+
+  // Server action hook
+  const { execute, isLoading } = useAction(createUser, {
+    onSuccess: (data) => {
+      toast.success(`User ${data.name} created successfully!`);
+      form.reset();
+    },
+    onError: (error) => {
+      toast.error(error);
+    }
+  });
+
+  const onSubmit = async (data: CreateUserInput) => {
+    await execute(data);
+  };
+
+  return (
+    <div className="max-w-md mx-auto p-6 border rounded-lg">
+      <h2 className="text-2xl font-bold mb-4">Create New User</h2>
+      
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {/* Name Field */}
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your full name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Email Field */}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email Address</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="Enter your email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Age Field */}
+          <FormField
+            control={form.control}
+            name="age"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Age</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    placeholder="Enter your age"
+                    {...field}
+                    onChange={e => field.onChange(parseInt(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Role Select */}
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Role</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="user">User</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Bio Textarea (Optional) */}
+          <FormField
+            control={form.control}
+            name="bio"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bio (Optional)</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Tell us about yourself..." 
+                    className="resize-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Terms Checkbox */}
+          <FormField
+            control={form.control}
+            name="terms"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox 
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>
+                    I accept the terms and conditions
+                  </FormLabel>
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Creating User...' : 'Create User'}
+          </Button>
+        </form>
+      </Form>
+    </div>
+  );
+}
+```
+
+### 🚀 **Advanced Form Patterns**
+
+**1. Dynamic Form Fields:**
+```typescript
+// Dynamic array of fields
+const form = useForm({
+  resolver: zodResolver(schema),
+  defaultValues: {
+    skills: [{ name: '', level: 'beginner' }]
+  }
+});
+
+// Add/remove fields dynamically
+const { fields, append, remove } = useFieldArray({
+  control: form.control,
+  name: "skills"
+});
+```
+
+**2. Dependent Fields:**
+```typescript
+// Watch field changes and react
+const watchRole = form.watch('role');
+
+// Conditional validation based on role
+const ConditionalSchema = z.object({
+  role: z.enum(['admin', 'user']),
+  adminKey: z.string().optional()
+}).refine(data => {
+  if (data.role === 'admin' && !data.adminKey) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Admin key is required for admin role",
+  path: ['adminKey']
+});
+```
+
+**3. Multi-step Form:**
+```typescript
+export function MultiStepForm() {
+  const [step, setStep] = useState(1);
+  const form = useForm<FormData>({
+    resolver: zodResolver(schema),
+    mode: 'onChange' // Validate on change for better UX
+  });
+
+  const nextStep = async () => {
+    const isStepValid = await form.trigger(getFieldsForStep(step));
+    if (isStepValid) {
+      setStep(step + 1);
+    }
+  };
+
+  const prevStep = () => setStep(step - 1);
+
+  return (
+    <Form {...form}>
+      <div className="mb-4">
+        <div className="flex justify-between items-center">
+          <span>Step {step} of 3</span>
+          <div className="flex space-x-2">
+            {[1, 2, 3].map(s => (
+              <div 
+                key={s}
+                className={`w-3 h-3 rounded-full ${
+                  s <= step ? 'bg-primary' : 'bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      {step === 1 && <PersonalInfoStep />}
+      {step === 2 && <ContactInfoStep />}
+      {step === 3 && <PreferencesStep />}
+      
+      <div className="flex justify-between mt-6">
+        <Button 
+          type="button" 
+          variant="outline"
+          onClick={prevStep}
+          disabled={step === 1}
+        >
+          Previous
+        </Button>
+        
+        {step < 3 ? (
+          <Button type="button" onClick={nextStep}>
+            Next
+          </Button>
+        ) : (
+          <Button type="submit" disabled={isLoading}>
+            Submit
+          </Button>
+        )}
+      </div>
+    </Form>
+  );
+}
+```
+
+### 🎯 **Form Best Practices Built-In**
+
+✅ **Automatic Validation** - Real-time validation with Zod schemas  
+✅ **Type Safety** - Full TypeScript integration  
+✅ **Error Handling** - Detailed field-level and form-level errors  
+✅ **Loading States** - Built-in loading indicators  
+✅ **Accessibility** - ARIA labels and screen reader support  
+✅ **Performance** - Optimized re-renders with React Hook Form  
+✅ **Server Integration** - Seamless server action integration  
+✅ **User Experience** - Smooth form interactions and feedback  
+
+### 📊 **Generated Form Components**
+
+Every project includes these enhanced form components:
+- **TextInput** - Enhanced text input with validation states
+- **SelectInput** - Searchable select with custom styling  
+- **PasswordInput** - Password field with show/hide toggle
+- **TextareaInput** - Auto-resizing textarea with character count
+- **FileUpload** - Drag-and-drop file upload with preview
+- **DateTimeInput** - Calendar picker with time selection
+- **RadioGroupInput** - Custom-styled radio groups
+
 ### 🧩 **Modular Components** _(Mix & Match)_
 
 - **📊 Advanced Data Table** - Filtering, sorting, pagination
