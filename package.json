@@ -1,0 +1,58 @@
+{
+  "name": "create-wm-stack",
+  "version": "1.0.4",
+  "description": "A flexible CLI tool to scaffold production-ready Next.js applications with your custom full-stack configuration. Created by Wael Manai.",
+  "main": "dist/cli.js",
+  "bin": {
+    "create-wm-stack": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx cli.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "nextjs",
+    "typescript",
+    "tailwindcss",
+    "prisma",
+    "cli",
+    "scaffold",
+    "fullstack",
+    "wael-manai",
+    "create-wm-stack",
+    "flexible",
+    "modular"
+  ],
+  "author": {
+    "name": "Wael Manai",
+    "url": "https://github.com/waelmanai"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/waelmanai/create-wm-stack.git"
+  },
+  "homepage": "https://github.com/waelmanai/create-wm-stack#readme",
+  "bugs": {
+    "url": "https://github.com/waelmanai/create-wm-stack/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "fs-extra": "^11.2.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.11.0",
+    "@types/prompts": "^2.4.9",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
