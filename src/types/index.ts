@@ -16,6 +16,10 @@ export interface ProjectConfig {
     customInputs: boolean;
     fileUpload: boolean;
     dateTimeInput: boolean;
+    dateRangeInput: boolean;
+    numberInput: boolean;
+    priceInput: boolean;
+    phoneInput: boolean;
     radioGroupInput: boolean;
   };
 }

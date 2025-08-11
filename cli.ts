@@ -75,9 +75,13 @@ async function createProject() {
       message: 'Select components to include:',
       choices: [
         { title: 'Data Table (Advanced table with filtering/sorting)', value: 'dataTable', selected: true },
-        { title: 'Custom Input Components', value: 'customInputs', selected: true },
+        { title: 'Custom Input Components (Basic inputs)', value: 'customInputs', selected: true },
         { title: 'File Upload Component', value: 'fileUpload', selected: false },
-        { title: 'Date Time Input', value: 'dateTimeInput', selected: false },
+        { title: 'Date Time Input (Single date/time picker)', value: 'dateTimeInput', selected: false },
+        { title: 'Date Range Input (Date range picker)', value: 'dateRangeInput', selected: false },
+        { title: 'Number Input (Numeric input with validation)', value: 'numberInput', selected: false },
+        { title: 'Price Input (Currency input with formatting)', value: 'priceInput', selected: false },
+        { title: 'Phone Input (International phone number input)', value: 'phoneInput', selected: false },
         { title: 'Radio Group Input', value: 'radioGroupInput', selected: false }
       ]
     }
@@ -110,6 +114,10 @@ async function createProject() {
       customInputs: response.components.includes('customInputs'),
       fileUpload: response.components.includes('fileUpload'),
       dateTimeInput: response.components.includes('dateTimeInput'),
+      dateRangeInput: response.components.includes('dateRangeInput'),
+      numberInput: response.components.includes('numberInput'),
+      priceInput: response.components.includes('priceInput'),
+      phoneInput: response.components.includes('phoneInput'),
       radioGroupInput: response.components.includes('radioGroupInput')
     }
   };

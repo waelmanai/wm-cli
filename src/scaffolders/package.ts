@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import { ProjectConfig } from '../types';
 
-export async function createPackageJson(projectName: string, packageManager: string, features: ProjectConfig['features']) {
+export async function createPackageJson(projectName: string, packageManager: string, features: ProjectConfig['features'], components: ProjectConfig['components']) {
   // Base scripts that are always included
   const scripts: Record<string, string> = {
     dev: 'next dev',
@@ -59,6 +59,7 @@ export async function createPackageJson(projectName: string, packageManager: str
     'react-hook-form': 'latest',
     '@hookform/resolvers': 'latest',
     zod: 'latest',
+    'date-fns': 'latest', // Required for date components
   };
 
   // Add conditional dependencies
@@ -73,6 +74,15 @@ export async function createPackageJson(projectName: string, packageManager: str
   if (features.nodemailer) {
     dependencies.nodemailer = 'latest';
     dependencies['@types/nodemailer'] = 'latest';
+  }
+
+  // Add component-specific dependencies
+  if (components.priceInput) {
+    dependencies['react-number-format'] = 'latest';
+  }
+
+  if (components.phoneInput) {
+    dependencies['react-phone-number-input'] = 'latest';
   }
 
   // Base dev dependencies

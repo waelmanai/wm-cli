@@ -974,6 +974,614 @@ function CustomRadioGroupItem({
 export { CustomRadioGroup, CustomRadioGroupItem };`;
     fs.writeFileSync('components/shared/inputs/RadioGroupInput.tsx', radioGroupInputSource);
   }
+
+  // DateRangeInput component
+  if (components.dateRangeInput) {
+    const dateRangeInputSource = `import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import {
+  type FieldValues,
+  type Path,
+  type PathValue,
+  type UseControllerProps,
+  useFormContext,
+} from "react-hook-form";
+
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+
+interface DateProperty<T extends FieldValues> extends UseControllerProps<T> { }
+
+interface DateRangeInputProps<T extends FieldValues> {
+  label: string;
+  dateFrom: DateProperty<T>;
+  dateTo: DateProperty<T>;
+  required?: boolean;
+}
+
+export default function DateRangeInput<T extends FieldValues>({
+  dateFrom,
+  dateTo,
+  required,
+}: DateRangeInputProps<T>) {
+  const { control, getValues, setValue } = useFormContext<T>();
+
+  // Set today as the minimum date that can be selected
+  const today = new Date();
+  // Reset hours, minutes, seconds and milliseconds to ensure accurate date comparison
+  today.setHours(0, 0, 0, 0);
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <FormField
+          control={control}
+          name={dateFrom.name}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                From {required && <span className="text-destructive">*</span>}
+              </FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-between text-left font-normal",
+                        !field.value && "text-muted-foreground",
+                      )}
+                    >
+                      {field.value ? (
+                        format(new Date(field.value), "MM/dd/yyyy")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="h-4 w-4" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-auto p-0 md:min-w-[550px]"
+                  align="start"
+                >
+                  <div className="flex flex-col md:flex-row justify-center">
+                    <Calendar
+                      mode="range"
+                      selected={{
+                        from: field.value ? new Date(field.value) : undefined,
+                        to: getValues(dateTo.name)
+                          ? new Date(getValues(dateTo.name))
+                          : undefined,
+                      }}
+                      onSelect={(range) => {
+                        if (range?.from) {
+                          field.onChange(range.from);
+
+                          // If to date is selected, update it
+                          if (range.to) {
+                            setValue(
+                              dateTo.name,
+                              range.to as PathValue<T, Path<T>>,
+                            );
+                          }
+                        }
+                      }}
+                      initialFocus
+                      disabled={{ before: today }}
+                      numberOfMonths={2}
+                      className="md:hidden" // Only show on mobile
+                    />
+                    <div className="hidden md:flex">
+                      <Calendar
+                        mode="range"
+                        selected={{
+                          from: field.value ? new Date(field.value) : undefined,
+                          to: getValues(dateTo.name)
+                            ? new Date(getValues(dateTo.name))
+                            : undefined,
+                        }}
+                        onSelect={(range) => {
+                          if (range?.from) {
+                            field.onChange(range.from);
+
+                            // If to date is selected, update it
+                            if (range.to) {
+                              setValue(
+                                dateTo.name,
+                                range.to as PathValue<T, Path<T>>,
+                              );
+                            }
+                          }
+                        }}
+                        initialFocus
+                        disabled={{ before: today }}
+                        numberOfMonths={2}
+                        classNames={{
+                          months: "flex flex-row space-x-4",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name={dateTo.name}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                To {required && <span className="text-destructive">*</span>}
+              </FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-between text-left font-normal",
+                        !field.value && "text-muted-foreground",
+                      )}
+                    >
+                      {field.value ? (
+                        format(new Date(field.value), "MM/dd/yyyy")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="h-4 w-4" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-auto p-0 md:min-w-[550px]"
+                  align="start"
+                >
+                  <div className="flex flex-col md:flex-row justify-center">
+                    <Calendar
+                      mode="range"
+                      selected={{
+                        from: getValues(dateFrom.name)
+                          ? new Date(getValues(dateFrom.name))
+                          : undefined,
+                        to: field.value ? new Date(field.value) : undefined,
+                      }}
+                      onSelect={(range) => {
+                        if (range?.to) {
+                          field.onChange(range.to);
+
+                          // If from date is selected, update it
+                          if (range.from) {
+                            setValue(
+                              dateFrom.name,
+                              range.from as PathValue<T, Path<T>>,
+                            );
+                          }
+                        }
+                      }}
+                      initialFocus
+                      numberOfMonths={2}
+                      className="md:hidden" // Only show on mobile
+                    />
+                    <div className="hidden md:flex">
+                      <Calendar
+                        mode="range"
+                        selected={{
+                          from: getValues(dateFrom.name)
+                            ? new Date(getValues(dateFrom.name))
+                            : undefined,
+                          to: field.value ? new Date(field.value) : undefined,
+                        }}
+                        onSelect={(range) => {
+                          if (range?.to) {
+                            field.onChange(range.to);
+
+                            // If from date is selected, update it
+                            if (range.from) {
+                              setValue(
+                                dateFrom.name,
+                                range.from as PathValue<T, Path<T>>,
+                              );
+                            }
+                          }
+                        }}
+                        initialFocus
+                        numberOfMonths={2}
+                        classNames={{
+                          months: "flex flex-row space-x-4",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+    </div>
+  );
+}`;
+    fs.writeFileSync('components/shared/inputs/DateRangeInput.tsx', dateRangeInputSource);
+  }
+
+  // NumberInput component
+  if (components.numberInput) {
+    const numberInputSource = `import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
+import type { FieldValues, UseControllerProps } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
+
+interface NumberInputProps<T extends FieldValues>
+    extends UseControllerProps<T> {
+    label: string;
+    className?: string;
+    endAdornment?: ReactNode;
+    required?: boolean;
+    min?: number;
+    max?: number;
+    onChange?: (value: number | undefined) => void;
+}
+
+export function NumberInput<T extends FieldValues>({
+    label,
+    className,
+    name,
+    endAdornment,
+    disabled,
+    required,
+    min,
+    max,
+    onChange,
+    ...props
+}: NumberInputProps<T>) {
+    const { control } = useFormContext<T>();
+
+    return (
+        <FormField
+            name={name}
+            control={control}
+            {...props}
+            render={({ field }) => (
+                <FormItem className={cn("flex w-full flex-col", className)}>
+                    <FormLabel className="text-base font-medium text-black">
+                        {label} {required && <span className="text-red-500">*</span>}
+                    </FormLabel>
+                    <FormControl>
+                        <Input
+                            type="number"
+                            disabled={disabled}
+                            {...field}
+                            className={cn(
+                                "w-full justify-between overflow-hidden overflow-ellipsis whitespace-nowrap rounded-[48px] border-[#E5E5E5] bg-white p-8 font-normal text-black",
+                                !field.value && "text-muted-foreground",
+                            )}
+                            min={min}
+                            max={max}
+                            onChange={(e) => {
+                                const value = parseFloat(e.target.value);
+                                field.onChange(isNaN(value) ? undefined : value);
+                                onChange?.(isNaN(value) ? undefined : value);
+                            }}
+                            endAdornment={endAdornment}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+    );
+}`;
+    fs.writeFileSync('components/shared/inputs/NumberInput.tsx', numberInputSource);
+  }
+
+  // PriceInput component
+  if (components.priceInput) {
+    const priceInputSource = `import {
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import type { FieldValues, UseControllerProps } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
+import { NumericFormat } from "react-number-format";
+
+interface PriceInputProps<T extends FieldValues> extends UseControllerProps<T> {
+    label: string;
+    placeholder?: string;
+    required?: boolean;
+}
+
+export default function PriceInput<T extends FieldValues>({
+    label,
+    placeholder,
+    name,
+    required,
+}: PriceInputProps<T>) {
+    const { control } = useFormContext<T>();
+    return (
+        <FormField
+            name={name}
+            control={control}
+            render={({ field }) => (
+                <FormItem className="flex w-full flex-col">
+                    <FormLabel className="text-2xl font-medium text-black">
+                        {label} {required && <span className="text-red-500">*</span>}
+                    </FormLabel>
+                    <NumericFormat
+                        className="w-full rounded-2xl border-gray-300 bg-white p-8 font-normal text-black"
+                        thousandSeparator=" "
+                        placeholder={placeholder}
+                        inputMode="decimal"
+                        value={field.value}
+                        onValueChange={({ floatValue }) => {
+                            field.onChange(floatValue);
+                        }}
+                        customInput={Input}
+                        suffix=" €"
+                    />
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+    );
+}`;
+    fs.writeFileSync('components/shared/inputs/PriceInput.tsx', priceInputSource);
+  }
+
+  // PhoneInput component
+  if (components.phoneInput) {
+    const phoneInputSource = `import {
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+import { cn } from "@/lib/utils";
+import type { FieldValues, UseControllerProps } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
+import { PhoneInputCountrySelect } from "./PhoneInputCountrySelect";
+
+interface PhoneInputProps<T extends FieldValues> extends UseControllerProps<T> {
+    label: string;
+    className?: string;
+    required?: boolean;
+}
+
+export function PhoneInput<T extends FieldValues>({
+    label,
+    className,
+    name,
+    required,
+    ...props
+}: PhoneInputProps<T>) {
+    const { control } = useFormContext<T>();
+    return (
+        <FormField
+            {...props}
+            control={control}
+            name={name}
+            render={({ field }) => (
+                <FormItem className={cn("flex w-full flex-col", className)}>
+                    <FormLabel className="text-base font-medium text-black">
+                        {label} {required && <span className="text-red-500">*</span>}
+                    </FormLabel>
+                    <PhoneInputCountrySelect
+                        {...field}
+                        defaultCountry="FR"
+                        className="rounded-full"
+                        onChange={(value) => field.onChange(value)}
+                    />
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+    );
+}`;
+    fs.writeFileSync('components/shared/inputs/PhoneInput.tsx', phoneInputSource);
+
+    // PhoneInputCountrySelect component
+    const phoneInputCountrySelectSource = `import { Button } from "@/components/ui/button";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import type { InputProps } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { CheckIcon, ChevronsUpDown } from "lucide-react";
+import * as React from "react";
+import * as RPNInput from "react-phone-number-input";
+import flags from "react-phone-number-input/flags";
+
+type PhoneInputProps = Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "onChange" | "value"
+> &
+    Omit<RPNInput.Props<typeof RPNInput.default>, "onChange"> & {
+        onChange?: (value: RPNInput.Value) => void;
+    };
+
+const PhoneInputCountrySelect: React.ForwardRefExoticComponent<PhoneInputProps> =
+    React.forwardRef<React.ElementRef<typeof RPNInput.default>, PhoneInputProps>(
+        ({ className, onChange, ...props }, ref) => {
+            return (
+                <RPNInput.default
+                    ref={ref}
+                    className={cn(
+                        "flex w-full rounded-full border border-[#E3E3E3] bg-white font-normal text-black",
+                        className,
+                    )}
+                    flagComponent={FlagComponent}
+                    countrySelectComponent={CountrySelect}
+                    inputComponent={InputComponent}
+                    /**
+                     * Handles the onChange event.
+                     *
+                     * react-phone-number-input might trigger the onChange event as undefined
+                     * when a valid phone number is not entered. To prevent this,
+                     * the value is coerced to an empty string.
+                     *
+                     * @param {E164Number | undefined} value - The entered value
+                     */
+                    onChange={(value) => onChange?.(value || (value as RPNInput.Value))}
+                    {...props}
+                />
+            );
+        },
+    );
+PhoneInputCountrySelect.displayName = "PhoneInput";
+
+const InputComponent = React.forwardRef<HTMLInputElement, InputProps>(
+    ({ className, ...props }, ref) => (
+        <Input
+            className={cn(
+                "m-0 ml-0 h-14 w-full rounded-full border-none p-8",
+                className,
+            )}
+            {...props}
+            ref={ref}
+        />
+    ),
+);
+InputComponent.displayName = "InputComponent";
+
+type CountrySelectOption = { label: string; value: RPNInput.Country };
+
+type CountrySelectProps = {
+    disabled?: boolean;
+    value: RPNInput.Country;
+    onChange: (value: RPNInput.Country) => void;
+    options: CountrySelectOption[];
+};
+
+const CountrySelect = ({
+    disabled,
+    value,
+    onChange,
+    options,
+}: CountrySelectProps) => {
+    const handleSelect = React.useCallback(
+        (country: RPNInput.Country) => {
+            onChange(country);
+        },
+        [onChange],
+    );
+
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button
+                    type="button"
+                    variant={"outline"}
+                    className={cn(
+                        "gap- mr-0 flex h-full items-center justify-center rounded-full border-none",
+                    )}
+                    disabled={disabled}
+                >
+                    <FlagComponent country={value} countryName={value} />
+                    <ChevronsUpDown
+                        className={cn(
+                            "-mr-2 h-4 w-4 opacity-50",
+                            disabled ? "hidden" : "opacity-100",
+                        )}
+                    />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[300px] p-0">
+                <Command>
+                    <CommandList>
+                        <ScrollArea className="h-72 bg-white">
+                            <CommandInput placeholder="Search country..." />
+                            <CommandEmpty>No country found.</CommandEmpty>
+                            <CommandGroup>
+                                {options
+                                    .filter((x) => x.value)
+                                    .map((option) => (
+                                        <CommandItem
+                                            className="gap-2"
+                                            key={option.value}
+                                            onSelect={() => handleSelect(option.value)}
+                                        >
+                                            <FlagComponent
+                                                country={option.value}
+                                                countryName={option.label}
+                                            />
+                                            <span className="flex-1 text-sm">{option.label}</span>
+                                            {option.value && (
+                                                <span className="text-sm text-foreground/50">
+                                                    {\`+\${RPNInput.getCountryCallingCode(option.value)}\`}
+                                                </span>
+                                            )}
+                                            <CheckIcon
+                                                className={cn(
+                                                    "ml-auto h-4 w-4",
+                                                    option.value === value ? "opacity-100" : "opacity-0",
+                                                )}
+                                            />
+                                        </CommandItem>
+                                    ))}
+                            </CommandGroup>
+                        </ScrollArea>
+                    </CommandList>
+                </Command>
+            </PopoverContent>
+        </Popover>
+    );
+};
+
+const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
+    const Flag = flags[country];
+
+    return (
+        <span className="flex justify-center h-4 w-6 overflow-hidden rounded-sm bg-foreground/20">
+            {Flag && <Flag title={countryName} />}
+        </span>
+    );
+};
+FlagComponent.displayName = "FlagComponent";
+
+export { PhoneInputCountrySelect };`;
+    fs.writeFileSync('components/shared/inputs/PhoneInputCountrySelect.tsx', phoneInputCountrySelectSource);
+  }
 }
 
 export async function createSharedDataTable() {

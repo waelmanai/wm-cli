@@ -32,7 +32,7 @@ export async function scaffoldProject(config: ProjectConfig) {
   setupProjectDirectory(config);
 
   // Create package.json
-  await createPackageJson(projectName, packageManager, features);
+  await createPackageJson(projectName, packageManager, features, components);
 
   // Create folder structure
   await createFolderStructure(features, components);

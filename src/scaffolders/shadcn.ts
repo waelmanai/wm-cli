@@ -40,6 +40,17 @@ export async function installShadcnComponents(packageManager: string, components
       shadcnComponents.add('calendar'); // DateTimePicker uses calendar
     }
     
+    if (components.dateRangeInput) {
+      shadcnComponents.add('popover'); // DateRangeInput uses popovers
+      shadcnComponents.add('calendar'); // DateRangeInput uses calendar
+    }
+    
+    if (components.phoneInput) {
+      shadcnComponents.add('command'); // PhoneInput uses command for search
+      shadcnComponents.add('popover'); // PhoneInput uses popover for dropdown
+      shadcnComponents.add('scroll-area'); // PhoneInput uses scroll area for long list
+    }
+    
     if (components.radioGroupInput) {
       shadcnComponents.add('radio-group'); // RadioGroup component
     }

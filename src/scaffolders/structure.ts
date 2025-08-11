@@ -22,7 +22,9 @@ export async function createFolderStructure(features: ProjectConfig['features'],
   ];
 
   // Add conditional folders based on component selections
-  if (components.customInputs || components.fileUpload || components.dateTimeInput || components.radioGroupInput) {
+  if (components.customInputs || components.fileUpload || components.dateTimeInput || 
+      components.dateRangeInput || components.numberInput || components.priceInput || 
+      components.phoneInput || components.radioGroupInput) {
     folders.push('components/shared/inputs');
   }
 
