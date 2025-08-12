@@ -1,6 +1,6 @@
 {
   "name": "create-wm-stack",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A flexible CLI tool to scaffold production-ready Next.js applications with your custom full-stack configuration. Created by Wael Manai.",
   "main": "dist/cli.js",
   "bin": {

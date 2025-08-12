@@ -84,6 +84,36 @@ async function createProject() {
         { title: 'Phone Input (International phone number input)', value: 'phoneInput', selected: false },
         { title: 'Radio Group Input', value: 'radioGroupInput', selected: false }
       ]
+    },
+    {
+      type: 'multiselect',
+      name: 'hooks',
+      message: 'Select custom hooks to include:',
+      choices: [
+        { title: 'useClickAway - Detect clicks outside element', value: 'useClickAway', selected: false },
+        { title: 'useContinuousRetry - Auto-retry failed operations', value: 'useContinuousRetry', selected: false },
+        { title: 'useCopyToClipboard - Copy text to clipboard', value: 'useCopyToClipboard', selected: false },
+        { title: 'useDebounce - Debounce values', value: 'useDebounce', selected: true },
+        { title: 'useEventListener - Add event listeners', value: 'useEventListener', selected: false },
+        { title: 'useGeolocation - Get user location', value: 'useGeolocation', selected: false },
+        { title: 'useHover - Track hover state', value: 'useHover', selected: false },
+        { title: 'useIntersectionObserver - Track element visibility', value: 'useIntersectionObserver', selected: false },
+        { title: 'useIsClient - Check if running on client', value: 'useIsClient', selected: true },
+        { title: 'useIsFirstRender - Check if first render', value: 'useIsFirstRender', selected: false },
+        { title: 'useKeyPress - Handle key press events', value: 'useKeyPress', selected: false },
+        { title: 'useLocalStorage - Local storage state management', value: 'useLocalStorage', selected: true },
+        { title: 'useLongPress - Handle long press events', value: 'useLongPress', selected: false },
+        { title: 'useMediaQuery - Responsive media queries', value: 'useMediaQuery', selected: true },
+        { title: 'useMouse - Track mouse position', value: 'useMouse', selected: false },
+        { title: 'useOrientation - Track device orientation', value: 'useOrientation', selected: false },
+        { title: 'usePageLeave - Detect page leave events', value: 'usePageLeave', selected: false },
+        { title: 'useSessionStorage - Session storage state management', value: 'useSessionStorage', selected: false },
+        { title: 'useThrottle - Throttle values', value: 'useThrottle', selected: false },
+        { title: 'useTimeout - Handle timeouts', value: 'useTimeout', selected: false },
+        { title: 'useToggle - Toggle boolean state', value: 'useToggle', selected: true },
+        { title: 'useWindowScroll - Track window scroll', value: 'useWindowScroll', selected: false },
+        { title: 'useWindowSize - Track window dimensions', value: 'useWindowSize', selected: false }
+      ]
     }
   ]);
 
@@ -119,6 +149,31 @@ async function createProject() {
       priceInput: response.components.includes('priceInput'),
       phoneInput: response.components.includes('phoneInput'),
       radioGroupInput: response.components.includes('radioGroupInput')
+    },
+    hooks: {
+      useClickAway: response.hooks.includes('useClickAway'),
+      useContinuousRetry: response.hooks.includes('useContinuousRetry'),
+      useCopyToClipboard: response.hooks.includes('useCopyToClipboard'),
+      useDebounce: response.hooks.includes('useDebounce'),
+      useEventListener: response.hooks.includes('useEventListener'),
+      useGeolocation: response.hooks.includes('useGeolocation'),
+      useHover: response.hooks.includes('useHover'),
+      useIntersectionObserver: response.hooks.includes('useIntersectionObserver'),
+      useIsClient: response.hooks.includes('useIsClient'),
+      useIsFirstRender: response.hooks.includes('useIsFirstRender'),
+      useKeyPress: response.hooks.includes('useKeyPress'),
+      useLocalStorage: response.hooks.includes('useLocalStorage'),
+      useLongPress: response.hooks.includes('useLongPress'),
+      useMediaQuery: response.hooks.includes('useMediaQuery'),
+      useMouse: response.hooks.includes('useMouse'),
+      useOrientation: response.hooks.includes('useOrientation'),
+      usePageLeave: response.hooks.includes('usePageLeave'),
+      useSessionStorage: response.hooks.includes('useSessionStorage'),
+      useThrottle: response.hooks.includes('useThrottle'),
+      useTimeout: response.hooks.includes('useTimeout'),
+      useToggle: response.hooks.includes('useToggle'),
+      useWindowScroll: response.hooks.includes('useWindowScroll'),
+      useWindowSize: response.hooks.includes('useWindowSize')
     }
   };
 

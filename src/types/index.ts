@@ -22,4 +22,29 @@ export interface ProjectConfig {
     phoneInput: boolean;
     radioGroupInput: boolean;
   };
+  hooks: {
+    useClickAway: boolean;
+    useContinuousRetry: boolean;
+    useCopyToClipboard: boolean;
+    useDebounce: boolean;
+    useEventListener: boolean;
+    useGeolocation: boolean;
+    useHover: boolean;
+    useIntersectionObserver: boolean;
+    useIsClient: boolean;
+    useIsFirstRender: boolean;
+    useKeyPress: boolean;
+    useLocalStorage: boolean;
+    useLongPress: boolean;
+    useMediaQuery: boolean;
+    useMouse: boolean;
+    useOrientation: boolean;
+    usePageLeave: boolean;
+    useSessionStorage: boolean;
+    useThrottle: boolean;
+    useTimeout: boolean;
+    useToggle: boolean;
+    useWindowScroll: boolean;
+    useWindowSize: boolean;
+  };
 }

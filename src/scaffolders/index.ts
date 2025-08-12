@@ -61,7 +61,7 @@ export async function scaffoldProject(config: ProjectConfig) {
   await createStores();
 
   // Create hooks
-  await createHooks();
+  await createHooks(config);
 
   // Create app files
   await createAppFiles(features);

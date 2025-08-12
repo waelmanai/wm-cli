@@ -7,6 +7,20 @@ A lightweight, flexible CLI tool to scaffold clean and modern Next.js applicatio
 [![npm version](https://badge.fury.io/js/create-wm-stack.svg)](https://badge.fury.io/js/create-wm-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+## 🆕 **What's New in v1.1.0**
+
+🎉 **New Professional Components Added:**
+- **📆 Date Range Input** - Dual calendar date range selection with responsive design
+- **🔢 Number Input** - Numeric input with validation, min/max constraints, and formatting
+- **💰 Price Input** - Currency input with automatic formatting (supports €, $, and more)
+- **📱 Phone Input** - International phone number input with country flags and validation
+
+✨ **Enhanced Features:**
+- **Smart Package Management** - Only installs dependencies for components you actually select
+- **Better Component Organization** - Clear categorization between basic and advanced components  
+- **Improved Documentation** - Comprehensive examples for all new components
+- **Full React Hook Form Integration** - All components work seamlessly with existing validation patterns
+
 ## 🚀 Quick Start
 
 ```bash
@@ -46,10 +60,38 @@ Creating a production-ready Next.js app with your custom stack
   ◉ Authentication (Better Auth)
 ? Select components to include:
 ❯ ◉ Data Table (Advanced table with filtering/sorting)
-  ◉ Custom Input Components
+  ◉ Custom Input Components (Basic inputs)
   ◯ File Upload Component
-  ◯ Date Time Input
+  ◯ Date Time Input (Single date/time picker)
+  ◯ Date Range Input (Date range picker)
+  ◯ Number Input (Numeric input with validation)
+  ◯ Price Input (Currency input with formatting)
+  ◯ Phone Input (International phone number input)
   ◯ Radio Group Input
+? Select custom hooks to include:
+❯ ◯ useClickAway - Detect clicks outside element
+  ◯ useContinuousRetry - Auto-retry failed operations
+  ◯ useCopyToClipboard - Copy text to clipboard
+  ◉ useDebounce - Debounce values
+  ◯ useEventListener - Add event listeners
+  ◯ useGeolocation - Get user location
+  ◯ useHover - Track hover state
+  ◯ useIntersectionObserver - Track element visibility
+  ◉ useIsClient - Check if running on client
+  ◯ useIsFirstRender - Check if first render
+  ◯ useKeyPress - Handle key press events
+  ◉ useLocalStorage - Local storage state management
+  ◯ useLongPress - Handle long press events
+  ◉ useMediaQuery - Responsive media queries
+  ◯ useMouse - Track mouse position
+  ◯ useOrientation - Track device orientation
+  ◯ usePageLeave - Detect page leave events
+  ◯ useSessionStorage - Session storage state management
+  ◯ useThrottle - Throttle values
+  ◯ useTimeout - Handle timeouts
+  ◉ useToggle - Toggle boolean state
+  ◯ useWindowScroll - Track window scroll
+  ◯ useWindowSize - Track window dimensions
 ```
 
 ## ✨ What's Included
@@ -658,24 +700,205 @@ export function MultiStepForm() {
 
 ### 📊 **Generated Form Components**
 
-Every project includes these enhanced form components:
+Every project can include these enhanced form components (choose what you need):
+
+#### **🏗️ Core Components** _(Basic Inputs)_
 - **TextInput** - Enhanced text input with validation states
 - **SelectInput** - Searchable select with custom styling  
 - **PasswordInput** - Password field with show/hide toggle
 - **TextareaInput** - Auto-resizing textarea with character count
-- **FileUpload** - Drag-and-drop file upload with preview
-- **DateTimeInput** - Calendar picker with time selection
-- **RadioGroupInput** - Custom-styled radio groups
+
+#### **🚀 Advanced Components** _(Professional Features)_
+- **FileUpload** - Drag-and-drop file upload with preview and progress tracking
+- **DateTimeInput** - Calendar picker with time selection and locale support
+- **DateRangeInput** - Dual calendar interface for date range selection
+- **NumberInput** - Numeric input with min/max validation and formatting
+- **PriceInput** - Currency input with automatic formatting and locale support
+- **PhoneInput** - International phone number input with country flags and validation
+- **RadioGroupInput** - Custom-styled radio groups with accessibility
+
+### 💡 **Smart Component Examples**
+
+**Date Range Selection:**
+```typescript
+<DateRangeInput 
+  label="Booking Period"
+  dateFrom={{ name: "checkIn" }}
+  dateTo={{ name: "checkOut" }}
+  required
+/>
+```
+
+**International Phone Input:**
+```typescript
+<PhoneInput 
+  label="Phone Number"
+  name="phone"
+  required
+  // Automatically includes country flags and validation
+/>
+```
+
+**Price Input with Formatting:**
+```typescript
+<PriceInput 
+  label="Product Price"
+  name="price"
+  placeholder="Enter price"
+  // Automatically formats: "1000" → "1 000 €"
+/>
+```
 
 ### 🧩 **Modular Components** _(Mix & Match)_
 
-- **📊 Advanced Data Table** - Filtering, sorting, pagination
-- **📝 Enhanced Form Inputs** - Select, Password, Textarea with features
-- **📁 File Upload Component** - Drag-and-drop with preview
-- **📅 Date Time Picker** - Calendar integration
-- **🔘 Radio Group Components** - Custom styling
+- **📊 Advanced Data Table** - Filtering, sorting, pagination with server-side support
+- **📝 Enhanced Form Inputs** - Select, Password, Textarea with validation states
+- **📁 File Upload Component** - Drag-and-drop with preview and progress
+- **📅 Date Time Input** - Single date/time picker with calendar integration
+- **📆 Date Range Input** - Dual calendar date range selection
+- **🔢 Number Input** - Numeric input with min/max validation and formatting
+- **💰 Price Input** - Currency input with automatic formatting (€, $, etc.)
+- **📱 Phone Input** - International phone number input with country flags
+- **🔘 Radio Group Components** - Custom-styled radio groups
 
 > 💡 **Smart Installation**: Only installs packages and components you actually selected!
+
+### 🪝 **Custom React Hooks** _(Production-Ready Utilities)_
+
+**Choose from 23 battle-tested custom hooks to supercharge your React development:**
+
+#### **📱 UI & Interaction Hooks**
+- **useClickAway** - Detect clicks outside elements (modals, dropdowns)
+- **useHover** - Track element hover state with enter/leave events
+- **useKeyPress** - Handle keyboard shortcuts and key combinations
+- **useLongPress** - Detect long press gestures for mobile interactions
+- **useToggle** - Simple boolean state management with toggle functionality
+
+#### **🌐 Browser & Device Hooks**
+- **useGeolocation** - Access user location with permission handling
+- **useMediaQuery** - Responsive design with CSS media query matching
+- **useOrientation** - Track device orientation changes
+- **useWindowSize** - Monitor window dimensions for responsive layouts
+- **useWindowScroll** - Track scroll position and scroll-based animations
+- **usePageLeave** - Detect when user is about to leave the page
+- **useIsClient** - Client-side rendering detection for SSR apps
+
+#### **⚡ Performance & State Hooks**
+- **useDebounce** - Debounce rapidly changing values (search, API calls)
+- **useThrottle** - Throttle frequent events (scroll, resize)
+- **useTimeout** - Declarative setTimeout with cleanup
+- **useContinuousRetry** - Auto-retry failed operations with backoff
+- **useIsFirstRender** - Check if component is on first render
+
+#### **💾 Storage Hooks**
+- **useLocalStorage** - Persistent local storage with React state sync
+- **useSessionStorage** - Session storage management with type safety
+
+#### **🔧 Utility Hooks**
+- **useEventListener** - Declarative event listeners with cleanup
+- **useIntersectionObserver** - Element visibility detection for lazy loading
+- **useCopyToClipboard** - Copy text to clipboard with success feedback
+- **useMouse** - Track mouse position and movement
+
+### 🚀 **Hook Usage Examples**
+
+**useDebounce for Search:**
+```typescript
+import { useDebounce } from '@/hooks/useDebounce';
+
+function SearchComponent() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  useEffect(() => {
+    if (debouncedSearchTerm) {
+      searchAPI(debouncedSearchTerm);
+    }
+  }, [debouncedSearchTerm]);
+
+  return (
+    <input 
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      placeholder="Search..."
+    />
+  );
+}
+```
+
+**useLocalStorage for Persistent State:**
+```typescript
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+
+function UserPreferences() {
+  const [theme, setTheme] = useLocalStorage('theme', 'light');
+  const [language, setLanguage] = useLocalStorage('language', 'en');
+
+  return (
+    <div>
+      <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </div>
+  );
+}
+```
+
+**useMediaQuery for Responsive Design:**
+```typescript
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+
+function ResponsiveComponent() {
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isTablet = useMediaQuery('(max-width: 1024px)');
+
+  return (
+    <div className={`
+      ${isMobile ? 'mobile-layout' : ''}
+      ${isTablet && !isMobile ? 'tablet-layout' : ''}
+    `}>
+      {isMobile ? <MobileNav /> : <DesktopNav />}
+    </div>
+  );
+}
+```
+
+**useClickAway for Modal Management:**
+```typescript
+import { useClickAway } from '@/hooks/useClickAway';
+
+function Modal({ isOpen, onClose, children }) {
+  const modalRef = useRef(null);
+  
+  useClickAway(modalRef, () => {
+    if (isOpen) {
+      onClose();
+    }
+  });
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay">
+      <div ref={modalRef} className="modal-content">
+        {children}
+      </div>
+    </div>
+  );
+}
+```
+
+### ✨ **Hook Features**
+
+✅ **TypeScript First** - Full type safety and IntelliSense support  
+✅ **Zero Dependencies** - Pure React hooks with no external dependencies  
+✅ **Production Ready** - Battle-tested in real applications  
+✅ **Performance Optimized** - Efficient implementations with proper cleanup  
+✅ **SSR Compatible** - Works with Next.js server-side rendering  
+✅ **Tree Shakeable** - Only bundle the hooks you actually use  
+✅ **Well Documented** - Comprehensive JSDoc comments and examples  
+✅ **Modern Patterns** - Uses latest React patterns and best practices
 
 ## 🚀 **Lightweight & Fast**
 
@@ -719,10 +942,12 @@ Every project includes these enhanced form components:
 5. **Feature Packages**: Prisma, Better Auth, etc. installed with their latest versions
 
 **Example Installation Commands:**
-- **Core**: `npm install zod@latest react-hook-form@latest zustand@latest lucide-react@latest`
+- **Core**: `npm install zod@latest react-hook-form@latest zustand@latest lucide-react@latest date-fns@latest`
 - **Database**: `npm install @prisma/client@latest && npm install -D prisma@latest`
 - **Auth**: `npm install better-auth@latest`
 - **Email**: `npm install nodemailer@latest @types/nodemailer@latest`
+- **Price Input**: `npm install react-number-format@latest` (only if selected)
+- **Phone Input**: `npm install react-phone-number-input@latest` (only if selected)
 
 > 🚀 **Result**: You always get the absolute latest versions without CLI updates!
 
@@ -934,6 +1159,23 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 - 📚 [Documentation](https://github.com/waelmanai/create-wm-stack#readme)
 - 🐛 [Report Issues](https://github.com/waelmanai/create-wm-stack/issues)
 - 💬 [Discussions](https://github.com/waelmanai/create-wm-stack/discussions)
+
+## 📝 Changelog
+
+### v1.1.0 (Latest)
+- 🆕 Added **Date Range Input** component with dual calendar interface
+- 🆕 Added **Number Input** component with validation and formatting
+- 🆕 Added **Price Input** component with automatic currency formatting
+- 🆕 Added **Phone Input** component with international support and flags
+- ✨ Enhanced package management - only installs dependencies for selected components
+- 📚 Improved documentation with comprehensive React Hook Form examples
+- 🏗️ Better component organization and categorization
+
+### v1.0.x
+- 🚀 Initial release with core scaffolding functionality
+- 📊 Data Table component with advanced features
+- 🔐 Authentication and database integration
+- 🧩 Modular component selection system
 
 ## ⭐ Show Your Support
 
