@@ -9,6 +9,11 @@ export async function createActions(config: ProjectConfig) {
   if (config.serverActions.contacts) {
     await createContactActions();
   }
+  
+  // Create newsletter actions if selected
+  if (config.serverActions.newsletter) {
+    await createNewsletterActions();
+  }
 }
 
 export async function createActionsExample() {
@@ -337,4 +342,220 @@ const deleteContactByIdHandler = async (data: DeleteContactByIdInputType): Promi
 export const deleteContactById = createSafeAction(DeleteContactByIdSchema, deleteContactByIdHandler);`;
 
   fs.writeFileSync('actions/contacts/deleteContactById/index.ts', deleteContactByIdIndexFile);
+}
+
+export async function createNewsletterActions() {
+  // Create newsletter folder structure
+  fs.ensureDirSync('actions/newsletter/subscribeToNewsletter');
+  fs.ensureDirSync('actions/newsletter/getAllSubscribers');
+  fs.ensureDirSync('actions/newsletter/getSubscriberById');
+  fs.ensureDirSync('actions/newsletter/deleteSubscriberById');
+
+  // SubscribeToNewsletter Action
+  const subscribeNewsletterSchemaFile = `import { z } from 'zod';
+
+export const NewsletterSchema = z.object({
+    email: z.string().email(),
+});`;
+
+  fs.writeFileSync('actions/newsletter/subscribeToNewsletter/schema.ts', subscribeNewsletterSchemaFile);
+
+  const subscribeNewsletterTypesFile = `import { ActionState } from "@/lib/create-safe-action";
+import { NewsletterSubscriber } from "@prisma/client";
+import { z } from "zod";
+import { NewsletterSchema } from "./schema";
+
+export type SubscribeNewsletterInputType = z.infer<typeof NewsletterSchema>;
+export type SubscribeNewsletterReturnType = ActionState<SubscribeNewsletterInputType, NewsletterSubscriber>;`;
+
+  fs.writeFileSync('actions/newsletter/subscribeToNewsletter/types.ts', subscribeNewsletterTypesFile);
+
+  const subscribeNewsletterIndexFile = `'use server';
+
+import { createSafeAction } from "@/lib/create-safe-action";
+import { prisma } from "@/lib/db";
+import { NewsletterSchema } from "./schema";
+import {
+  SubscribeNewsletterInputType,
+  SubscribeNewsletterReturnType,
+} from "./types";
+
+const subscribeNewsletterHandler = async (data: SubscribeNewsletterInputType): Promise<SubscribeNewsletterReturnType> => {
+  const { email } = data;
+
+  try {
+    const subscriber = await prisma.newsletterSubscriber.upsert({
+      where: { email },
+      update: {},
+      create: { email },
+    });
+
+    return {
+      data: subscriber,
+    };
+  } catch (error) {
+    console.error('Error subscribing to newsletter:', error);
+    return {
+      error: 'Failed to subscribe to newsletter',
+    };
+  }
+};
+
+export const subscribeToNewsletter = createSafeAction(NewsletterSchema, subscribeNewsletterHandler);`;
+
+  fs.writeFileSync('actions/newsletter/subscribeToNewsletter/index.ts', subscribeNewsletterIndexFile);
+
+  // GetAllSubscribers Action
+  const getAllSubscribersSchemaFile = `import { z } from "zod";
+
+export const GetAllSubscribersSchema = z.object({});`;
+
+  fs.writeFileSync('actions/newsletter/getAllSubscribers/schema.ts', getAllSubscribersSchemaFile);
+
+  const getAllSubscribersTypesFile = `import { ActionState } from "@/lib/create-safe-action";
+import { NewsletterSubscriber } from "@prisma/client";
+
+export type GetAllSubscribersReturnType = ActionState<object, NewsletterSubscriber[]>;`;
+
+  fs.writeFileSync('actions/newsletter/getAllSubscribers/types.ts', getAllSubscribersTypesFile);
+
+  const getAllSubscribersIndexFile = `'use server';
+
+import { createSafeAction } from "@/lib/create-safe-action";
+import { z } from "zod";
+import { prisma } from "@/lib/db";
+import {
+  GetAllSubscribersReturnType
+} from "./types";
+
+const getAllSubscribersHandler = async (): Promise<GetAllSubscribersReturnType> => {
+  try {
+    const subscribers = await prisma.newsletterSubscriber.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return {
+      data: subscribers,
+    };
+  } catch (error) {
+    console.error('Error fetching subscribers:', error);
+    return {
+      error: 'Unable to fetch subscribers',
+    };
+  }
+};
+
+export const getAllSubscribers = createSafeAction(z.object({}), getAllSubscribersHandler);`;
+
+  fs.writeFileSync('actions/newsletter/getAllSubscribers/index.ts', getAllSubscribersIndexFile);
+
+  // GetSubscriberById Action
+  const getSubscriberByIdSchemaFile = `import { z } from "zod";
+
+export const GetSubscriberByIdSchema = z.object({
+  id: z.string()
+});`;
+
+  fs.writeFileSync('actions/newsletter/getSubscriberById/schema.ts', getSubscriberByIdSchemaFile);
+
+  const getSubscriberByIdTypesFile = `import { ActionState } from "@/lib/create-safe-action";
+import { NewsletterSubscriber } from "@prisma/client";
+import { z } from "zod";
+import { GetSubscriberByIdSchema } from "./schema";
+
+export type GetSubscriberByIdInputType = z.infer<typeof GetSubscriberByIdSchema>;
+export type GetSubscriberByIdReturnType = ActionState<GetSubscriberByIdInputType, NewsletterSubscriber>;`;
+
+  fs.writeFileSync('actions/newsletter/getSubscriberById/types.ts', getSubscriberByIdTypesFile);
+
+  const getSubscriberByIdIndexFile = `'use server';
+
+import { createSafeAction } from "@/lib/create-safe-action";
+import { prisma } from "@/lib/db";
+import { GetSubscriberByIdSchema } from "./schema";
+import {
+  GetSubscriberByIdInputType,
+  GetSubscriberByIdReturnType
+} from "./types";
+
+const getSubscriberByIdHandler = async (data: GetSubscriberByIdInputType): Promise<GetSubscriberByIdReturnType> => {
+  const { id } = data;
+
+  try {
+    const subscriber = await prisma.newsletterSubscriber.findUnique({
+      where: { id },
+    });
+
+    if (!subscriber) {
+      return {
+        error: 'Subscriber not found',
+      };
+    }
+
+    return {
+      data: subscriber,
+    };
+  } catch (error) {
+    console.error('Error fetching subscriber by ID:', error);
+    return {
+      error: 'Unable to fetch subscriber',
+    };
+  }
+};
+
+export const getSubscriberById = createSafeAction(GetSubscriberByIdSchema, getSubscriberByIdHandler);`;
+
+  fs.writeFileSync('actions/newsletter/getSubscriberById/index.ts', getSubscriberByIdIndexFile);
+
+  // DeleteSubscriberById Action
+  const deleteSubscriberByIdSchemaFile = `import { z } from "zod";
+
+export const DeleteSubscriberByIdSchema = z.object({
+  id: z.string()
+});`;
+
+  fs.writeFileSync('actions/newsletter/deleteSubscriberById/schema.ts', deleteSubscriberByIdSchemaFile);
+
+  const deleteSubscriberByIdTypesFile = `import { ActionState } from "@/lib/create-safe-action";
+import { NewsletterSubscriber } from "@prisma/client";
+import { z } from "zod";
+import { DeleteSubscriberByIdSchema } from "./schema";
+
+export type DeleteSubscriberByIdInputType = z.infer<typeof DeleteSubscriberByIdSchema>;
+export type DeleteSubscriberByIdReturnType = ActionState<DeleteSubscriberByIdInputType, NewsletterSubscriber>;`;
+
+  fs.writeFileSync('actions/newsletter/deleteSubscriberById/types.ts', deleteSubscriberByIdTypesFile);
+
+  const deleteSubscriberByIdIndexFile = `'use server';
+
+import { createSafeAction } from "@/lib/create-safe-action";
+import { prisma } from "@/lib/db";
+import { DeleteSubscriberByIdSchema } from "./schema";
+import {
+  DeleteSubscriberByIdInputType,
+  DeleteSubscriberByIdReturnType
+} from "./types";
+
+const deleteSubscriberByIdHandler = async (data: DeleteSubscriberByIdInputType): Promise<DeleteSubscriberByIdReturnType> => {
+  const { id } = data;
+
+  try {
+    const subscriber = await prisma.newsletterSubscriber.delete({
+      where: { id },
+    });
+
+    return {
+      data: subscriber,
+    };
+  } catch (error) {
+    console.error('Error deleting subscriber by ID:', error);
+    return {
+      error: 'Unable to delete subscriber',
+    };
+  }
+};
+
+export const deleteSubscriberById = createSafeAction(DeleteSubscriberByIdSchema, deleteSubscriberByIdHandler);`;
+
+  fs.writeFileSync('actions/newsletter/deleteSubscriberById/index.ts', deleteSubscriberByIdIndexFile);
 }

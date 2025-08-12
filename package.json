@@ -1,6 +1,6 @@
 {
   "name": "create-wm-stack",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A flexible CLI tool to scaffold production-ready Next.js applications with your custom full-stack configuration. Created by Wael Manai.",
   "main": "dist/cli.js",
   "bin": {
@@ -24,6 +24,7 @@
     "fullstack",
     "wael-manai",
     "create-wm-stack",
+    "wm-cli",
     "flexible",
     "modular"
   ],
@@ -33,11 +34,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/waelmanai/create-wm-stack.git"
+    "url": "https://github.com/waelmanai/wm-cli.git"
   },
-  "homepage": "https://github.com/waelmanai/create-wm-stack#readme",
+  "homepage": "https://github.com/waelmanai/wm-cli#readme",
   "bugs": {
-    "url": "https://github.com/waelmanai/create-wm-stack/issues"
+    "url": "https://github.com/waelmanai/wm-cli/issues"
   },
   "license": "MIT",
   "dependencies": {

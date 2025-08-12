@@ -49,5 +49,6 @@ export interface ProjectConfig {
   };
   serverActions: {
     contacts: boolean;
+    newsletter: boolean;
   };
 }

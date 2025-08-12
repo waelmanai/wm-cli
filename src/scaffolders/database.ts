@@ -81,6 +81,12 @@ model Contact {
   updatedAt   DateTime @updatedAt
 
   @@map("contact")
+}` : ''}${config?.serverActions?.newsletter ? `
+
+model NewsletterSubscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
 }` : ''}`;
 
   fs.writeFileSync('prisma/schema.prisma', prismaSchema);

@@ -7,19 +7,27 @@ A lightweight, flexible CLI tool to scaffold clean and modern Next.js applicatio
 [![npm version](https://badge.fury.io/js/create-wm-stack.svg)](https://badge.fury.io/js/create-wm-stack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 🆕 **What's New in v1.1.0**
+## 🆕 **What's New in v1.0.7**
 
-🎉 **New Professional Components Added:**
+🚀 **New Server Actions System:**
+- **📧 Contact Management** - Complete CRUD operations for contact forms
+- **📰 Newsletter Management** - Newsletter subscription system with subscriber management
+- **🛡️ Type-Safe Actions** - Full TypeScript integration with Zod validation
+- **🗄️ Auto Database Schema** - Automatically adds required models to Prisma schema
+
+✨ **Enhanced Features:**
+- **Modular Server Actions** - Choose only the server actions you need
+- **Production-Ready Code** - Complete error handling and validation
+- **Extensible Architecture** - Easy to add more server action modules
+- **Clean Code Structure** - Each action organized in its own folder with schema/types
+
+🎉 **Previous Updates (v1.1.0):**
 - **📆 Date Range Input** - Dual calendar date range selection with responsive design
 - **🔢 Number Input** - Numeric input with validation, min/max constraints, and formatting
 - **💰 Price Input** - Currency input with automatic formatting (supports €, $, and more)
 - **📱 Phone Input** - International phone number input with country flags and validation
-
-✨ **Enhanced Features:**
 - **Smart Package Management** - Only installs dependencies for components you actually select
-- **Better Component Organization** - Clear categorization between basic and advanced components  
-- **Improved Documentation** - Comprehensive examples for all new components
-- **Full React Hook Form Integration** - All components work seamlessly with existing validation patterns
+- **Better Component Organization** - Clear categorization between basic and advanced components
 
 ## 🚀 Quick Start
 
@@ -94,6 +102,7 @@ Creating a production-ready Next.js app with your custom stack
   ◯ useWindowSize - Track window dimensions
 ? Select server actions to include:
 ❯ ◯ Contact Management - Complete contact CRUD operations
+  ◯ Newsletter Management - Newsletter subscription system
 ```
 
 ## ✨ What's Included
@@ -345,6 +354,23 @@ your-project/
 │           ├── index.ts
 │           ├── schema.ts
 │           └── types.ts
+│   └── newsletter/               # Newsletter CRUD actions (if selected)
+│       ├── subscribeToNewsletter/
+│       │   ├── index.ts
+│       │   ├── schema.ts
+│       │   └── types.ts
+│       ├── getAllSubscribers/
+│       │   ├── index.ts
+│       │   ├── schema.ts
+│       │   └── types.ts
+│       ├── getSubscriberById/
+│       │   ├── index.ts
+│       │   ├── schema.ts
+│       │   └── types.ts
+│       └── deleteSubscriberById/
+│           ├── index.ts
+│           ├── schema.ts
+│           └── types.ts
 └── components/
     └── forms/                    # Example forms using the pattern
 ```
@@ -484,7 +510,134 @@ export function ContactForm() {
 }
 ```
 
-> 🎯 **More Server Actions Coming Soon**: Blog management, e-commerce operations, and more!
+#### **📰 Newsletter Management** _(Complete Subscription System)_
+
+When you select Newsletter Management, the CLI generates:
+
+**📧 Newsletter Subscription Action:**
+```typescript
+// actions/newsletter/subscribeToNewsletter/index.ts
+export const subscribeToNewsletter = createSafeAction(
+  NewsletterSchema,
+  async (data) => {
+    const subscriber = await prisma.newsletterSubscriber.upsert({
+      where: { email: data.email },
+      update: {},
+      create: { email: data.email },
+    });
+    return { data: subscriber };
+  }
+);
+```
+
+**📋 Subscriber Listing Action:**
+```typescript
+// actions/newsletter/getAllSubscribers/index.ts
+export const getAllSubscribers = createSafeAction(
+  GetAllSubscribersSchema,
+  async () => {
+    const subscribers = await prisma.newsletterSubscriber.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+    return { data: subscribers };
+  }
+);
+```
+
+**🔍 Individual Subscriber Retrieval:**
+```typescript
+// actions/newsletter/getSubscriberById/index.ts
+export const getSubscriberById = createSafeAction(
+  GetSubscriberByIdSchema,
+  async (data) => {
+    const subscriber = await prisma.newsletterSubscriber.findUnique({
+      where: { id: data.id },
+    });
+    
+    if (!subscriber) {
+      return { error: 'Subscriber not found' };
+    }
+    
+    return { data: subscriber };
+  }
+);
+```
+
+**🗑️ Subscriber Deletion Action:**
+```typescript
+// actions/newsletter/deleteSubscriberById/index.ts
+export const deleteSubscriberById = createSafeAction(
+  DeleteSubscriberByIdSchema,
+  async (data) => {
+    const subscriber = await prisma.newsletterSubscriber.delete({
+      where: { id: data.id },
+    });
+    return { data: subscriber };
+  }
+);
+```
+
+**🗄️ Database Schema (Auto-added to Prisma):**
+```prisma
+model NewsletterSubscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+```
+
+**✨ Features:**
+- **Email Validation** - Zod schema validation for email addresses
+- **Duplicate Prevention** - Uses upsert to prevent duplicate subscriptions  
+- **Database Integration** - Prisma ORM with PostgreSQL
+- **CRUD Operations** - Complete Create, Read, Update, Delete functionality
+- **Production Ready** - Includes proper error handling and logging
+- **Simple & Clean** - Minimal schema focused on essential fields
+
+**📊 Usage Example:**
+```typescript
+// In your newsletter signup component
+import { useAction } from '@/hooks/use-actions';
+import { subscribeToNewsletter } from '@/actions/newsletter/subscribeToNewsletter';
+
+export function NewsletterSignup() {
+  const { execute, fieldErrors, error, isLoading } = useAction(subscribeToNewsletter, {
+    onSuccess: (subscriber) => {
+      toast.success(`Successfully subscribed ${subscriber.email} to newsletter!`);
+    }
+  });
+
+  const handleSubmit = async (formData: FormData) => {
+    await execute({
+      email: formData.get('email') as string,
+    });
+  };
+
+  return (
+    <form action={handleSubmit} className="flex gap-2">
+      <input 
+        name="email" 
+        type="email" 
+        placeholder="Enter your email"
+        className="flex-1 px-3 py-2 border rounded"
+      />
+      {fieldErrors?.email && <span className="error">{fieldErrors.email}</span>}
+      
+      <button 
+        type="submit" 
+        disabled={isLoading}
+        className="px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        {isLoading ? 'Subscribing...' : 'Subscribe'}
+      </button>
+      
+      {error && <div className="error">{error}</div>}
+    </form>
+  );
+}
+```
+
+> 🎯 **More Server Actions Coming Soon**: Blog management, e-commerce operations, user management, and more!
 
 ## 📝 **React Hook Form Integration**
 
@@ -1319,7 +1472,16 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 📝 Changelog
 
-### v1.1.0 (Latest)
+### v1.0.7 (Latest)
+- 🚀 Added **Server Actions System** - Modular, production-ready server actions
+- 📧 Added **Contact Management** - Complete CRUD operations for contact forms
+- 📰 Added **Newsletter Management** - Newsletter subscription system with subscriber management
+- 🛡️ Added **Type-Safe Actions** - Full TypeScript integration with Zod validation  
+- 🗄️ Added **Auto Database Schema** - Automatically adds required models to Prisma schema
+- ✨ Enhanced **Extensible Architecture** - Easy to add more server action modules
+- 📚 Comprehensive documentation for server actions with usage examples
+
+### v1.1.0
 - 🆕 Added **Date Range Input** component with dual calendar interface
 - 🆕 Added **Number Input** component with validation and formatting
 - 🆕 Added **Price Input** component with automatic currency formatting

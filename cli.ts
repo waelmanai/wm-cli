@@ -120,7 +120,8 @@ async function createProject() {
       name: 'serverActions',
       message: 'Select server actions to include:',
       choices: [
-        { title: 'Contact Management - Complete contact CRUD operations', value: 'contacts', selected: false }
+        { title: 'Contact Management - Complete contact CRUD operations', value: 'contacts', selected: false },
+        { title: 'Newsletter Management - Newsletter subscription system', value: 'newsletter', selected: false }
       ]
     }
   ]);
@@ -184,7 +185,8 @@ async function createProject() {
       useWindowSize: response.hooks.includes('useWindowSize')
     },
     serverActions: {
-      contacts: response.serverActions.includes('contacts')
+      contacts: response.serverActions.includes('contacts'),
+      newsletter: response.serverActions.includes('newsletter')
     }
   };
 
