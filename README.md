@@ -92,6 +92,8 @@ Creating a production-ready Next.js app with your custom stack
   ◉ useToggle - Toggle boolean state
   ◯ useWindowScroll - Track window scroll
   ◯ useWindowSize - Track window dimensions
+? Select server actions to include:
+❯ ◯ Contact Management - Complete contact CRUD operations
 ```
 
 ## ✨ What's Included
@@ -322,12 +324,167 @@ your-project/
 ├── hooks/
 │   └── use-actions.ts            # React hook for managing actions
 ├── actions/
-│   └── example-actions.ts        # Example server actions
+│   └── getUsers/                 # Example user actions (always included)
+│       ├── index.ts
+│       ├── schemas.ts
+│       └── types.ts
+│   └── contacts/                 # Contact CRUD actions (if selected)
+│       ├── submitContact/
+│       │   ├── index.ts
+│       │   ├── schema.ts
+│       │   └── types.ts
+│       ├── getAllContacts/
+│       │   ├── index.ts
+│       │   ├── schema.ts
+│       │   └── types.ts
+│       ├── getContactById/
+│       │   ├── index.ts
+│       │   ├── schema.ts
+│       │   └── types.ts
+│       └── deleteContactById/
+│           ├── index.ts
+│           ├── schema.ts
+│           └── types.ts
 └── components/
     └── forms/                    # Example forms using the pattern
 ```
 
 > 🚀 **Pro Tip**: This pattern scales perfectly from simple forms to complex multi-step workflows!
+
+### 🚀 **Ready-to-Use Server Actions** _(Choose What You Need)_
+
+The CLI can generate production-ready server action modules for common use cases:
+
+#### **📧 Contact Management** _(Complete CRUD Operations)_
+
+When you select Contact Management, the CLI generates:
+
+**📝 Contact Submission Action:**
+```typescript
+// actions/contacts/submitContact/index.ts
+export const submitContact = createSafeAction(
+  ContactEmailSchema,
+  async (data) => {
+    const contact = await prisma.contact.create({
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        companyName: data.companyName ?? "",
+        subject: data.subject,
+        message: data.message,
+      },
+    });
+    return { data: contact };
+  }
+);
+```
+
+**📋 Contact Listing Action:**
+```typescript
+// actions/contacts/getAllContacts/index.ts
+export const getAllContacts = createSafeAction(
+  GetAllContactsSchema,
+  async () => {
+    const contacts = await prisma.contact.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+    return { data: contacts };
+  }
+);
+```
+
+**🔍 Individual Contact Retrieval:**
+```typescript
+// actions/contacts/getContactById/index.ts
+export const getContactById = createSafeAction(
+  GetContactByIdSchema,
+  async (data) => {
+    const contact = await prisma.contact.findUnique({
+      where: { id: data.id },
+    });
+    
+    if (!contact) {
+      return { error: 'Contact not found' };
+    }
+    
+    return { data: contact };
+  }
+);
+```
+
+**🗑️ Contact Deletion Action:**
+```typescript
+// actions/contacts/deleteContactById/index.ts
+export const deleteContactById = createSafeAction(
+  DeleteContactByIdSchema,
+  async (data) => {
+    const contact = await prisma.contact.delete({
+      where: { id: data.id },
+    });
+    return { data: contact };
+  }
+);
+```
+
+**🗄️ Database Schema (Auto-added to Prisma):**
+```prisma
+model Contact {
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String
+  companyName String
+  message     String   @db.Text
+  subject     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contact")
+}
+```
+
+**✨ Features:**
+- **Type-Safe Validation** - Zod schemas for all inputs
+- **Error Handling** - Structured error responses
+- **Database Integration** - Prisma ORM with PostgreSQL
+- **CRUD Operations** - Complete Create, Read, Update, Delete functionality
+- **Production Ready** - Includes proper error handling and logging
+- **Modular Structure** - Each action in its own folder with schema/types
+
+**📊 Usage Example:**
+```typescript
+// In your component
+import { useAction } from '@/hooks/use-actions';
+import { submitContact } from '@/actions/contacts/submitContact';
+
+export function ContactForm() {
+  const { execute, fieldErrors, error, isLoading } = useAction(submitContact, {
+    onSuccess: (contact) => {
+      toast.success(`Contact from ${contact.firstName} submitted successfully!`);
+    }
+  });
+
+  const handleSubmit = async (formData: FormData) => {
+    await execute({
+      firstName: formData.get('firstName') as string,
+      lastName: formData.get('lastName') as string,
+      email: formData.get('email') as string,
+      companyName: formData.get('companyName') as string,
+      subject: formData.get('subject') as string,
+      message: formData.get('message') as string,
+    });
+  };
+
+  return (
+    <form action={handleSubmit}>
+      {/* Form fields with validation */}
+    </form>
+  );
+}
+```
+
+> 🎯 **More Server Actions Coming Soon**: Blog management, e-commerce operations, and more!
 
 ## 📝 **React Hook Form Integration**
 

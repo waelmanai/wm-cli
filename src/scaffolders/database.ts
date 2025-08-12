@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
+import { ProjectConfig } from '../types';
 
-export async function createPrismaFiles() {
+export async function createPrismaFiles(config?: ProjectConfig) {
   // Prisma schema
   const prismaSchema = `generator client {
   provider = "prisma-client-js"
@@ -66,7 +67,21 @@ model Address {
   userId       String
   
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}`;
+}${config?.serverActions?.contacts ? `
+
+model Contact {
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String
+  companyName String
+  message     String   @db.Text
+  subject     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contact")
+}` : ''}`;
 
   fs.writeFileSync('prisma/schema.prisma', prismaSchema);
 

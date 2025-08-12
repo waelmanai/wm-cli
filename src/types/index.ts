@@ -47,4 +47,7 @@ export interface ProjectConfig {
     useWindowScroll: boolean;
     useWindowSize: boolean;
   };
+  serverActions: {
+    contacts: boolean;
+  };
 }

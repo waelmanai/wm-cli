@@ -114,6 +114,14 @@ async function createProject() {
         { title: 'useWindowScroll - Track window scroll', value: 'useWindowScroll', selected: false },
         { title: 'useWindowSize - Track window dimensions', value: 'useWindowSize', selected: false }
       ]
+    },
+    {
+      type: 'multiselect',
+      name: 'serverActions',
+      message: 'Select server actions to include:',
+      choices: [
+        { title: 'Contact Management - Complete contact CRUD operations', value: 'contacts', selected: false }
+      ]
     }
   ]);
 
@@ -174,6 +182,9 @@ async function createProject() {
       useToggle: response.hooks.includes('useToggle'),
       useWindowScroll: response.hooks.includes('useWindowScroll'),
       useWindowSize: response.hooks.includes('useWindowSize')
+    },
+    serverActions: {
+      contacts: response.serverActions.includes('contacts')
     }
   };
 

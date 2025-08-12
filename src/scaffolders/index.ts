@@ -15,7 +15,7 @@ import {
   createDataTableHooks
 } from './components';
 import { createLibFiles } from './lib';
-import { createActionsExample } from './actions';
+import { createActions } from './actions';
 import { createStores } from './stores';
 import { createHooks } from './hooks';
 import { createAppFiles } from './app';
@@ -54,8 +54,8 @@ export async function scaffoldProject(config: ProjectConfig) {
   // Create lib files
   await createLibFiles(features);
 
-  // Create actions example
-  await createActionsExample();
+  // Create actions
+  await createActions(config);
 
   // Create stores
   await createStores();
@@ -76,7 +76,7 @@ export async function scaffoldProject(config: ProjectConfig) {
   }
 
   if (features.database) {
-    await createPrismaFiles();
+    await createPrismaFiles(config);
   }
 
   // Install dependencies
